@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, X, Play } from 'lucide-react';
+import { Users, Plus, X, Play, Hash } from 'lucide-react';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { THEME } from '../../config/theme';
 
@@ -38,56 +38,71 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onStart }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col gap-8 py-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="flex flex-col gap-10 py-6"
         >
-            <header>
-                <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Mímica Party</h1>
-                <p style={{ color: THEME.colors.textMuted }}>Configura tus equipos</p>
+            <header className="floating">
+                <h1 className="text-gradient" style={{ fontSize: '4rem', lineHeight: 1, marginBottom: '0.25rem' }}>
+                    Mímica Party
+                </h1>
+                <p style={{ color: THEME.colors.textMuted, fontSize: '1.2rem', fontWeight: 600 }}>
+                    ¡La diversión empieza aquí!
+                </p>
             </header>
 
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-8">
                 {[1, 2].map((teamNum) => {
                     const teamName = teamNum === 1 ? team1Name : team2Name;
                     const setTeamName = teamNum === 1 ? setTeam1Name : setTeam2Name;
                     const players = teamNum === 1 ? team1Players : team2Players;
+                    const color = teamNum === 1 ? THEME.colors.primary : THEME.colors.secondary;
 
                     return (
-                        <div key={teamNum} className="glass p-6 text-left">
-                            <div className="flex items-center gap-3 mb-4">
-                                <Users size={24} color={teamNum === 1 ? THEME.colors.primary : THEME.colors.secondary} />
-                                <input
-                                    type="text"
-                                    value={teamName}
-                                    onChange={(e) => setTeamName(e.target.value)}
-                                    className="bg-transparent border-none text-xl font-bold focus:outline-none w-full"
-                                    style={{ color: teamNum === 1 ? THEME.colors.primary : THEME.colors.secondary }}
-                                />
+                        <div key={teamNum} className="glass p-8 text-left relative overflow-hidden">
+                            {/* Accent line */}
+                            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '4px', background: color }} />
+
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="p-3 rounded-2xl" style={{ backgroundColor: `${color}15` }}>
+                                    <Users size={28} color={color} />
+                                </div>
+                                <div className="flex-1">
+                                    <input
+                                        type="text"
+                                        value={teamName}
+                                        onChange={(e) => setTeamName(e.target.value)}
+                                        className="bg-transparent border-none text-2xl font-black focus:outline-none w-full"
+                                        style={{ color: color, letterSpacing: '-0.02em' }}
+                                        placeholder="Nombre del equipo"
+                                    />
+                                    <p style={{ fontSize: '0.8rem', color: THEME.colors.textMuted, marginTop: '2px' }}>EQUIPO {teamNum}</p>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col gap-2">
-                                <AnimatePresence>
+                            <div className="flex flex-col gap-3">
+                                <AnimatePresence mode="popLayout">
                                     {players.map((player, idx) => (
                                         <motion.div
                                             key={idx}
-                                            initial={{ opacity: 0, x: -10 }}
+                                            initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: 10 }}
-                                            className="flex items-center gap-2 bg-slate-700/50 rounded-lg p-2"
-                                            style={{ background: 'rgba(255,255,255,0.05)' }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            className="glass-card flex items-center gap-3"
                                         >
+                                            <Hash size={14} color={THEME.colors.textMuted} />
                                             <input
                                                 type="text"
                                                 value={player}
                                                 onChange={(e) => updatePlayer(teamNum as 1 | 2, idx, e.target.value)}
-                                                className="bg-transparent border-none text-slate-200 focus:outline-none w-full px-2"
+                                                className="bg-transparent border-none text-white font-medium focus:outline-none w-full px-1"
+                                                placeholder={`Jugador ${idx + 1}`}
                                             />
                                             {players.length > 1 && (
                                                 <button
                                                     onClick={() => removePlayer(teamNum as 1 | 2, idx)}
-                                                    className="p-1 hover:text-red-400 transition-colors bg-transparent border-none cursor-pointer"
+                                                    className="p-1 hover:text-red-400 transition-colors bg-white/5 rounded-lg border-none cursor-pointer"
                                                 >
                                                     <X size={16} />
                                                 </button>
@@ -99,21 +114,29 @@ export const SetupScreen: React.FC<SetupScreenProps> = ({ onStart }) => {
 
                             <button
                                 onClick={() => addPlayer(teamNum as 1 | 2)}
-                                className="mt-4 flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors bg-transparent border-none cursor-pointer"
+                                className="mt-6 flex items-center gap-2 text-sm font-bold transition-all px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border-none cursor-pointer"
                             >
-                                <Plus size={16} /> Añadir Jugador
+                                <Plus size={18} /> AÑADIR JUGADOR
                             </button>
                         </div>
                     );
                 })}
             </div>
 
-            <PrimaryButton
-                onClick={() => onStart(team1Name, team1Players, team2Name, team2Players)}
-                className="mt-4"
-            >
-                <Play size={20} fill="currentColor" /> EMPEZAR JUEGO
-            </PrimaryButton>
+            <div className="px-4">
+                <PrimaryButton
+                    onClick={() => onStart(team1Name, team1Players, team2Name, team2Players)}
+                    style={{
+                        height: '72px',
+                        fontSize: '1.5rem',
+                        fontWeight: 900,
+                        borderRadius: '24px',
+                        boxShadow: '0 20px 40px -10px rgba(99, 102, 241, 0.4)'
+                    }}
+                >
+                    <Play size={24} fill="currentColor" strokeWidth={0} /> EMPEZAR JUEGO
+                </PrimaryButton>
+            </div>
         </motion.div>
     );
 };

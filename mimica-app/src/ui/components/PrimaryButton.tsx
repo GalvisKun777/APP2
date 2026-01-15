@@ -8,6 +8,7 @@ interface PrimaryButtonProps {
     variant?: 'primary' | 'secondary' | 'danger' | 'success';
     className?: string;
     disabled?: boolean;
+    style?: React.CSSProperties;
 }
 
 export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -15,7 +16,8 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
     children,
     variant = 'primary',
     className = '',
-    disabled = false
+    disabled = false,
+    style = {}
 }) => {
     const bgColor = {
         primary: THEME.colors.primary,
@@ -38,7 +40,8 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
                 opacity: disabled ? 0.6 : 1,
                 cursor: disabled ? 'not-allowed' : 'pointer',
                 border: 'none',
-                minWidth: '200px'
+                minWidth: '200px',
+                ...style
             }}
         >
             {children}

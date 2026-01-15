@@ -4,7 +4,7 @@ import { THEME } from '../../config/theme';
 import { PrimaryButton } from '../components/PrimaryButton';
 import type { Team } from '../../models/Team';
 import confetti from 'canvas-confetti';
-import { Trophy, RefreshCw } from 'lucide-react';
+import { Trophy, RefreshCw, Star } from 'lucide-react';
 
 interface VictoryScreenProps {
     winningTeam: Team;
@@ -38,31 +38,76 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({ winningTeam, onRes
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center py-12 gap-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-12 px-6 h-full text-center"
+            style={{ minHeight: '80vh' }}
         >
-            <Trophy size={120} color={THEME.colors.accent} />
+            <div className="relative mb-12">
+                <motion.div
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', damping: 12, stiffness: 200 }}
+                >
+                    <Trophy size={160} color="#fbbf24" style={{ filter: 'drop-shadow(0 0 30px rgba(251, 191, 36, 0.4))' }} />
+                </motion.div>
+                <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    style={{ position: 'absolute', top: -20, right: -20 }}
+                >
+                    <Star size={40} color="#fbbf24" fill="#fbbf24" />
+                </motion.div>
+                <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    style={{ position: 'absolute', bottom: 0, left: -30 }}
+                >
+                    <Star size={30} color="#fbbf24" fill="#fbbf24" />
+                </motion.div>
+            </div>
 
-            <div>
-                <h1 style={{ fontSize: '3.5rem', marginBottom: '0' }}>¡VICTORIA!</h1>
-                <h2 style={{
-                    fontSize: '2.5rem',
-                    color: THEME.colors.accent,
-                    background: 'none',
-                    WebkitTextFillColor: 'initial'
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+            >
+                <h1 className="text-gradient" style={{ fontSize: '3.5rem', marginBottom: '0', lineHeight: 1 }}>
+                    ¡VICTORIA!
+                </h1>
+                <h2 className="text-gold" style={{
+                    fontSize: '4.5rem',
+                    lineHeight: 1.1,
+                    marginTop: '0.5rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '-0.04em'
                 }}>
                     {winningTeam.name}
                 </h2>
-            </div>
+            </motion.div>
 
-            <p style={{ fontSize: '1.25rem', color: THEME.colors.textMuted, maxWidth: '300px' }}>
-                Han demostrado ser los mejores en el arte de la mímica.
-            </p>
+            <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                style={{ fontSize: '1.4rem', color: THEME.colors.textMuted, maxWidth: '350px', marginTop: '2rem', fontWeight: 500 }}
+            >
+                ¡Han demostrado ser los mejores maestros de la mímica!
+            </motion.p>
 
-            <PrimaryButton onClick={onRestart} className="mt-8">
-                <RefreshCw size={20} /> JUGAR DE NUEVO
-            </PrimaryButton>
+            <motion.div
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1 }}
+                className="w-full mt-12"
+            >
+                <PrimaryButton
+                    onClick={onRestart}
+                    style={{ height: '72px', fontSize: '1.5rem', width: '100%' }}
+                >
+                    <RefreshCw size={24} style={{ marginRight: '8px' }} /> JUGAR DE NUEVO
+                </PrimaryButton>
+            </motion.div>
         </motion.div>
     );
 };
