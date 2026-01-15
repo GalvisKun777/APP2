@@ -24,36 +24,74 @@ export class GameEngine {
 
         return {
             teams,
-            currentTeamIndex: Randomizer.flipCoin(),
-            status: "setup",
+            currentTeamIndex: 0,
+            status: "diceRoll",
             isGameOver: false,
             roundWords: Randomizer.generateRoundWords(),
+            diceRollPhase: 'waiting',
         };
     }
 
-    static nextTurn(state: GameState, success: boolean): GameState {
-        const newTeams = [...state.teams];
-        const currentTeam = { ...newTeams[state.currentTeamIndex] };
+    static rollDiceForTeam(state: GameState, teamIndex: 1 | 2): GameState {
+        const diceValue = Randomizer.rollDice();
 
-        if (success) {
-            currentTeam.score += 1;
+        if (teamIndex === 1) {
+            return {
+                ...state,
+                team1DiceRoll: diceValue,
+                diceRollPhase: 'team2',
+            };
+        } else {
+            const newState = {
+                ...state,
+                team2DiceRoll: diceValue,
+                diceRollPhase: 'complete' as const,
+            };
+
+            // Determinar quién empieza
+            if (state.team1DiceRoll! > diceValue) {
+                return { ...newState, currentTeamIndex: 0 };
+            } else if (state.team1DiceRoll! < diceValue) {
+                return { ...newState, currentTeamIndex: 1 };
+            } else {
+                // Empate - volver a tirar
+                return {
+                    ...state,
+                    team1DiceRoll: undefined,
+                    team2DiceRoll: undefined,
+                    diceRollPhase: 'waiting',
+                };
+            }
         }
+    }
+
+    static startGameAfterDiceRoll(state: GameState): GameState {
+        return {
+            ...state,
+            status: 'dice',
+        };
+    }
+
+    static nextTurn(state: GameState): GameState {
+        // La puntuación ya se actualizó en finishTurn
+        const currentTeam = state.teams[state.currentTeamIndex];
 
         // Check victory
         if (currentTeam.score >= GAME_CONFIG.MAX_SCORE) {
             return {
                 ...state,
-                teams: newTeams.map((t, i) => i === state.currentTeamIndex ? currentTeam : t),
                 isGameOver: true,
                 status: "victory",
                 winningTeamId: currentTeam.id,
-                turnSuccess: success,
             };
         }
 
+        const newTeams = [...state.teams];
+        const updatedTeam = { ...currentTeam };
+
         // Rotate player for the team that just finished
-        currentTeam.currentPlayerIndex = (currentTeam.currentPlayerIndex + 1) % currentTeam.players.length;
-        newTeams[state.currentTeamIndex] = currentTeam;
+        updatedTeam.currentPlayerIndex = (updatedTeam.currentPlayerIndex + 1) % updatedTeam.players.length;
+        newTeams[state.currentTeamIndex] = updatedTeam;
 
         // Switch team
         const nextTeamIndex = (state.currentTeamIndex + 1) % 2;
@@ -63,7 +101,7 @@ export class GameEngine {
             teams: newTeams,
             currentTeamIndex: nextTeamIndex,
             status: "dice",
-            turnSuccess: success,
+            turnSuccess: undefined,
             roundWords: Randomizer.generateRoundWords(),
             targetCategory: Randomizer.getRandomCategory(),
         };
@@ -86,8 +124,18 @@ export class GameEngine {
     }
 
     static finishTurn(state: GameState, success: boolean): GameState {
+        const newTeams = [...state.teams];
+
+        if (success) {
+            // Actualizar puntaje inmediatamente
+            const currentTeam = { ...newTeams[state.currentTeamIndex] };
+            currentTeam.score += 1;
+            newTeams[state.currentTeamIndex] = currentTeam;
+        }
+
         return {
             ...state,
+            teams: newTeams,
             status: "result",
             turnSuccess: success,
         };

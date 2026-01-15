@@ -1,5 +1,5 @@
 export class TimerService {
-    private intervalId: any = null;
+    private intervalId: ReturnType<typeof setInterval> | null = null;
     private duration: number;
     private onTick?: (timeLeft: number) => void;
     private onFinish?: () => void;

@@ -28,4 +28,8 @@ export class Randomizer {
     static flipCoin(): number {
         return Math.random() < 0.5 ? 0 : 1;
     }
+
+    static rollDice(): number {
+        return Math.floor(Math.random() * 6) + 1; // Returns 1-6
+    }
 }
