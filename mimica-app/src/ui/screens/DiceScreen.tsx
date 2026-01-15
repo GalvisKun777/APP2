@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { THEME } from '../../config/theme';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { Dice6 } from 'lucide-react';
+import { Dice } from '../components/Dice';
 import type { Team } from '../../models/Team';
 
 interface DiceScreenProps {
@@ -16,36 +16,45 @@ export const DiceScreen: React.FC<DiceScreenProps> = ({ currentTeam, onContinue,
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center py-12 gap-8"
+            className="flex flex-col items-center justify-center py-12 gap-10"
         >
-            <header>
-                <h2 style={{ fontSize: '2rem' }}>
+            <header className="text-center">
+                <h1 className="text-gradient" style={{ fontSize: '3rem', marginBottom: '0.25rem' }}>
                     {isFirstTurn ? '¡Sorteo Inicial!' : 'Siguiente Turno'}
-                </h2>
-                <p style={{ color: THEME.colors.textMuted }}>Le toca a:</p>
+                </h1>
+                <p style={{ color: THEME.colors.textMuted, fontSize: '1.2rem', fontWeight: 600 }}>Es el momento de:</p>
             </header>
 
             <motion.div
-                animate={{
-                    rotateY: [0, 360],
-                    y: [0, -20, 0]
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="glass p-12 flex flex-col items-center gap-4"
-                style={{ borderColor: THEME.colors.primary }}
+                className="flex flex-col items-center gap-6"
             >
-                <Dice6 size={64} color={THEME.colors.primary} />
-                <h3 style={{ fontSize: '2.5rem', margin: 0, color: THEME.colors.text }}>
-                    {currentTeam.name}
-                </h3>
-                <p style={{ fontSize: '1.25rem', color: THEME.colors.primary, fontWeight: 'bold' }}>
-                    {currentPlayer}
-                </p>
+                <div className="relative">
+                    <Dice
+                        value={6}
+                        color={THEME.colors.primary}
+                        isRolling={false}
+                        size={160}
+                    />
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                        className="absolute inset-x-[-20%] inset-y-[-20%] border-4 border-dashed border-white/5 rounded-full pointer-events-none"
+                    />
+                </div>
+
+                <div className="glass px-10 py-6 border-b-4 text-center mt-4" style={{ borderColor: THEME.colors.primary }}>
+                    <h3 className="font-black" style={{ fontSize: '2.5rem', margin: 0, color: THEME.colors.text }}>
+                        {currentTeam.name}
+                    </h3>
+                    <p style={{ fontSize: '1.5rem', color: THEME.colors.primary, fontWeight: 900, marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                        {currentPlayer}
+                    </p>
+                </div>
             </motion.div>
 
-            <PrimaryButton onClick={onContinue}>
+            <PrimaryButton onClick={onContinue} style={{ width: '100%', height: '72px' }}>
                 REVELAR PALABRAS
             </PrimaryButton>
         </motion.div>

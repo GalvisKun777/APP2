@@ -90,7 +90,15 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({ winningTeam, onRes
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-                style={{ fontSize: '1.4rem', color: THEME.colors.textMuted, maxWidth: '350px', marginTop: '2rem', fontWeight: 500 }}
+                style={{
+                    fontSize: '1.4rem',
+                    color: THEME.colors.textMuted,
+                    maxWidth: '400px',
+                    marginTop: '2rem',
+                    fontWeight: 500,
+                    textAlign: 'center',
+                    lineHeight: 1.4
+                }}
             >
                 ¡Han demostrado ser los mejores maestros de la mímica!
             </motion.p>
